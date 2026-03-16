@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZombAI — Where Learning Meets Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --z-green:  #00c853;
+    --z-lime:   #76ff03;
+    --z-dark:   #0a0f0a;
+    --z-card:   #111811;
+    --z-border: rgba(0,200,83,0.18);
+    --z-text:   #e8f5e9;
+    --z-muted:  rgba(232,245,233,0.45);
+    --z-glow:   0 0 40px rgba(0,200,83,0.25);
+    --radius:   14px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--z-dark);
+    color: var(--z-text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,83,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,83,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Radial glow pulse */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0,200,83,0.08) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50%       { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+  }
+
+  /* ── Nav ──────────────────────────────────────────────── */
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1.1rem 2rem;
+    gap: 1.4rem;
+  }
+  nav a {
+    color: var(--z-muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--z-green); }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid var(--z-border);
+    color: var(--z-text) !important;
+    padding: 6px 18px;
+    border-radius: 6px;
+    transition: background 0.2s, border-color 0.2s !important;
+  }
+  .nav-btn:hover { background: rgba(0,200,83,0.1) !important; border-color: var(--z-green) !important; }
+
+  /* ── Hero ─────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem 2rem;
+    text-align: center;
+  }
+
+  /* ZombAI Logo — Google-style multi-color letters */
+  .logo {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(4.5rem, 12vw, 9rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 0.4rem;
+    animation: logoIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+    user-select: none;
+  }
+  @keyframes logoIn {
+    from { opacity: 0; transform: translateY(-28px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .logo .z  { color: #4285F4; }
+  .logo .o  { color: #EA4335; }
+  .logo .m  { color: #FBBC05; }
+  .logo .b  { color: #4285F4; }
+  .logo .ai { color: var(--z-green); position: relative; }
+  .logo .ai::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    left: 0; right: 0;
+    height: 4px;
+    background: var(--z-green);
+    border-radius: 2px;
+    box-shadow: 0 0 12px var(--z-green);
+  }
+
+  /* Tagline */
+  .tagline {
+    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    color: var(--z-muted);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    margin-bottom: 2.8rem;
+    animation: fadeUp 0.7s 0.2s both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Welcome strip */
+  .welcome {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,200,83,0.08);
+    border: 1px solid var(--z-border);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-size: 0.8rem;
+    color: var(--z-green);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 1.6rem;
+    animation: fadeUp 0.6s 0.05s both;
+  }
+  .welcome .dot {
+    width: 7px; height: 7px;
+    background: var(--z-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--z-green);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Explore Button */
+  .explore-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+    color: #021a08;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 24px rgba(0,200,83,0.4), 0 1px 0 rgba(255,255,255,0.15) inset;
+    transition: transform 0.18s, box-shadow 0.18s;
+    animation: fadeUp 0.7s 0.35s both;
+    overflow: hidden;
+  }
+  .explore-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    border-radius: inherit;
+  }
+  .explore-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 36px rgba(0,200,83,0.55), 0 1px 0 rgba(255,255,255,0.2) inset;
+  }
+  .explore-btn:active { transform: scale(0.98); }
+  .explore-btn svg { flex-shrink: 0; }
+  .explore-btn.loading { opacity: 0.75; pointer-events: none; }
+
+  /* Spinner inside button */
+  .btn-spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(2,26,8,0.2);
+    border-top-color: #021a08;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Projects Section ─────────────────────────────────── */
+  #projects-section {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 1.2rem 4rem;
+    display: none;
+  }
+  #projects-section.visible { display: block; animation: fadeUp 0.5s ease both; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--z-text);
+  }
+  .section-title span { color: var(--z-green); }
+  .repo-count {
+    font-size: 0.78rem;
+    color: var(--z-muted);
+    background: rgba(0,200,83,0.08);
+    border: 1px solid var(--z-border);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  /* Grid */
+  .repo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Repo Card */
+  .repo-card {
+    background: var(--z-card);
+    border: 1px solid var(--z-border);
+    border-radius: var(--radius);
+    padding: 1.35rem 1.4rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    animation: cardIn 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .repo-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--z-green), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .repo-card:hover {
+    border-color: rgba(0,200,83,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,200,83,0.1);
+  }
+  .repo-card:hover::before { opacity: 1; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .repo-icon {
+    width: 40px; height: 40px;
+    background: rgba(0,200,83,0.1);
+    border: 1px solid var(--z-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+  .repo-meta { flex: 1; min-width: 0; }
+  .repo-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  .repo-name .zomb-highlight {
+    color: var(--z-green);
+  }
+  .repo-updated {
+    font-size: 0.7rem;
+    color: var(--z-muted);
+  }
+
+  .repo-desc {
+    font-size: 0.82rem;
+    color: rgba(232,245,233,0.6);
+    line-height: 1.55;
+    flex: 1;
+    min-height: 36px;
+  }
+  .repo-desc.empty { font-style: italic; opacity: 0.4; }
+
+  .repo-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: rgba(0,200,83,0.1);
+    border: 1px solid rgba(0,200,83,0.22);
+    color: var(--z-green);
+    text-transform: uppercase;
+  }
+  .tag.lang-ts  { background: rgba(66,133,244,0.1); border-color: rgba(66,133,244,0.25); color: #4285F4; }
+  .tag.lang-js  { background: rgba(251,188,5,0.1);  border-color: rgba(251,188,5,0.25);  color: #FBBC05; }
+  .tag.lang-py  { background: rgba(52,168,83,0.1);  border-color: rgba(52,168,83,0.25);  color: #34A853; }
+  .tag.lang-html{ background: rgba(234,67,53,0.1);  border-color: rgba(234,67,53,0.25);  color: #EA4335; }
+
+  /* Star / fork row */
+  .repo-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.72rem;
+    color: var(--z-muted);
+  }
+  .stat { display: flex; align-items: center; gap: 4px; }
+
+  /* Action Buttons */
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-top: auto;
+  }
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  .action-btn:hover { transform: translateY(-1px); }
+  .action-btn:active { transform: scale(0.97); }
+  .btn-repo {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+  }
+  .btn-repo:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
+  .btn-live {
+    background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+    color: #021a08;
+    box-shadow: 0 2px 12px rgba(0,200,83,0.3);
+  }
+  .btn-live:hover { box-shadow: 0 4px 20px rgba(0,200,83,0.5); }
+  .btn-live.no-pages {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.25);
+    box-shadow: none;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  /* Error / empty state */
+  .state-msg {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--z-muted);
+  }
+  .state-msg .icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .state-msg p { font-size: 0.9rem; line-height: 1.6; }
+  .state-msg code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+
+  /* ── Footer ───────────────────────────────────────────── */
+  footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 1.6rem 1rem;
+    border-top: 1px solid var(--z-border);
+    font-size: 0.8rem;
+    color: var(--z-muted);
+    letter-spacing: 0.2px;
+  }
+  footer strong { color: var(--z-green); font-weight: 800; }
+  footer a {
+    color: var(--z-green);
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+  footer a:hover { opacity: 0.7; }
+  .footer-heart { color: #EA4335; }
+
+  /* ── Responsive ───────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .logo { letter-spacing: -2px; }
+    .repo-grid { grid-template-columns: 1fr; }
+    .card-actions { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="https://github.com/balram3429" target="_blank" rel="noopener">GitHub</a>
+  <a href="https://github.com/balram3429" target="_blank" rel="noopener" class="nav-btn">@balram3429</a>
+</nav>
+
+<!-- Hero -->
+<main class="hero">
+
+  <div class="welcome">
+    <span class="dot"></span>
+    Welcome to ZombAI
+  </div>
+
+  <!-- Logo -->
+  <div class="logo" aria-label="ZombAI">
+    <span class="z">Z</span><span class="o">o</span><span class="m">m</span><span class="b">b</span><span class="ai">AI</span>
+  </div>
+
+  <p class="tagline">Intelligent Projects. Built to learn. Designed to inspire.</p>
+
+  <!-- Explore Button -->
+  <button class="explore-btn" id="exploreBtn" onclick="fetchProjects()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <span id="btnText">Explore Projects</span>
+    <span class="btn-spinner" id="btnSpinner"></span>
+  </button>
+
+</main>
+
+<!-- Projects -->
+<section id="projects-section">
+  <div class="section-header">
+    <div class="section-title">Zomb<span>AI</span> Repositories</div>
+    <div class="repo-count" id="repoCount">Loading…</div>
+  </div>
+  <div class="repo-grid" id="repoGrid"></div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <span class="footer-heart">♥</span>
+    Learning is never so Simple — Powered by <strong>ZombAI</strong> &nbsp;·&nbsp;
+    <a href="https://github.com/balram3429" target="_blank" rel="noopener">@balram3429</a>
+  </p>
+</footer>
+
+<script>
+const GITHUB_USER = 'balram3429';
+const ZOMB_PATTERN = /zomb/i;
+
+function getLangClass(lang) {
+  if (!lang) return '';
+  const l = lang.toLowerCase();
+  if (l === 'typescript') return 'lang-ts';
+  if (l === 'javascript') return 'lang-js';
+  if (l === 'python') return 'lang-py';
+  if (l === 'html') return 'lang-html';
+  return '';
+}
+
+function getLangEmoji(lang) {
+  if (!lang) return '📁';
+  const l = lang.toLowerCase();
+  if (l === 'typescript') return '🔷';
+  if (l === 'javascript') return '🟨';
+  if (l === 'python') return '🐍';
+  if (l === 'html') return '🌐';
+  if (l === 'css') return '🎨';
+  if (l === 'java') return '☕';
+  return '📦';
+}
+
+function highlightZomb(name) {
+  return name.replace(/(zomb)/gi, '<span class="zomb-highlight">$1</span>');
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr);
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 30) return `${days} days ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`;
+  return `${Math.floor(months / 12)} year${Math.floor(months/12)>1?'s':''} ago`;
+}
+
+function renderCard(repo, index) {
+  const pagesUrl = `https://${GITHUB_USER}.github.io/${repo.name}/`;
+  const hasPages = repo.has_pages;
+  const lang = repo.language || '';
+  const desc = repo.description || '';
+
+  return `
+    <div class="repo-card" style="animation-delay:${index * 0.06}s">
+      <div class="card-top">
+        <div class="repo-icon">${getLangEmoji(lang)}</div>
+        <div class="repo-meta">
+          <div class="repo-name">${highlightZomb(repo.name)}</div>
+          <div class="repo-updated">Updated ${timeAgo(repo.updated_at)}</div>
+        </div>
+      </div>
+
+      <div class="repo-desc ${desc ? '' : 'empty'}">${desc || 'No description provided'}</div>
+
+      <div class="repo-tags">
+        ${lang ? `<span class="tag ${getLangClass(lang)}">${lang}</span>` : ''}
+        ${repo.stargazers_count > 0 ? `<span class="tag">★ ${repo.stargazers_count}</span>` : ''}
+        ${repo.fork ? '<span class="tag">Fork</span>' : ''}
+        ${repo.topics && repo.topics.length ? repo.topics.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('') : ''}
+      </div>
+
+      <div class="repo-stats">
+        <span class="stat">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          ${repo.forks_count} forks
+        </span>
+        <span class="stat">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ${repo.open_issues_count} issues
+        </span>
+        <span class="stat">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          ${repo.watchers_count} watching
+        </span>
+      </div>
+
+      <div class="card-actions">
+        <a class="action-btn btn-repo"
+           href="${repo.html_url}"
+           target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          Explore Repo
+        </a>
+        <a class="action-btn btn-live ${hasPages ? '' : 'no-pages'}"
+           href="${hasPages ? pagesUrl : '#'}"
+           target="${hasPages ? '_blank' : '_self'}"
+           rel="noopener"
+           title="${hasPages ? 'View live hosted page' : 'No hosted page available'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          ${hasPages ? 'View Result' : 'No Live Page'}
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+async function fetchProjects() {
+  const btn = document.getElementById('exploreBtn');
+  const btnText = document.getElementById('btnText');
+  const btnSpinner = document.getElementById('btnSpinner');
+  const section = document.getElementById('projects-section');
+  const grid = document.getElementById('repoGrid');
+  const countEl = document.getElementById('repoCount');
+
+  // Loading state
+  btn.classList.add('loading');
+  btnText.textContent = 'Fetching…';
+  btnSpinner.style.display = 'block';
+  grid.innerHTML = '';
+
+  try {
+    // Fetch all repos (paginated — up to 200)
+    let allRepos = [];
+    for (let page = 1; page <= 4; page++) {
+      const res = await fetch(
+        `https://api.github.com/users/${GITHUB_USER}/repos?sort=created&direction=desc&per_page=50&page=${page}`,
+        { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      );
+      if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) break;
+      allRepos = allRepos.concat(data);
+      if (data.length < 50) break;
+    }
+
+    // Filter Zomb repos
+    const zombRepos = allRepos.filter(r => ZOMB_PATTERN.test(r.name));
+
+    // Sort: most recently created first
+    zombRepos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    section.classList.add('visible');
+
+    if (zombRepos.length === 0) {
+      grid.innerHTML = `
+        <div class="state-msg" style="grid-column:1/-1">
+          <div class="icon">🔍</div>
+          <p>No repositories matching <code>zomb</code> found yet.<br>Check back soon!</p>
+        </div>`;
+      countEl.textContent = '0 projects';
+    } else {
+      countEl.textContent = `${zombRepos.length} project${zombRepos.length !== 1 ? 's' : ''} found`;
+      grid.innerHTML = zombRepos.map((r, i) => renderCard(r, i)).join('');
+    }
+
+    // Update button
+    btnText.textContent = 'Refresh';
+    btn.classList.remove('loading');
+    btnSpinner.style.display = 'none';
+
+    // Scroll to results
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+  } catch (err) {
+    section.classList.add('visible');
+    grid.innerHTML = `
+      <div class="state-msg" style="grid-column:1/-1">
+        <div class="icon">⚠️</div>
+        <p>Could not fetch repositories.<br>${err.message}<br><br>
+        You may be rate-limited by the GitHub API. Try again in a minute.</p>
+      </div>`;
+    countEl.textContent = 'Error';
+    btnText.textContent = 'Explore Projects';
+    btn.classList.remove('loading');
+    btnSpinner.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
